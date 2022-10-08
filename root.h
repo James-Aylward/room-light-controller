@@ -7,21 +7,23 @@ String root_html = "<!DOCTYPE html>\n\
         body {\n\
             padding: 0;\n\
             margin: 0;\n\
-            overflow: hidden;\n\
+            /* overflow: hidden; */\n\
             font-family: monospace;\n\
             font-size: 1rem;\n\
         }\n\
 \n\
         div.hexColorPicker {\n\
-            width: fit-content;\n\
+            width: 100%;\n\
             margin: 0.75em auto;\n\
         }\n\
 \n\
         span.condensed-line {\n\
             text-align: center;\n\
             display: block;\n\
-            font-size: 20px;\n\
-            line-height: 14.65px;\n\
+            /* font-size: 40px; */\n\
+            font-size: 80px;\n\
+            /* line-height: 29.3px; */\n\
+            line-height: 58.6px;\n\
             font-stretch: ultra-condensed;\n\
         }\n\
 \n\
@@ -48,14 +50,45 @@ String root_html = "<!DOCTYPE html>\n\
             /* Non-prefixed version, currently\n\
 		                                  supported by Chrome, Edge, Opera and Firefox */\n\
         }\n\
+\n\
+        .slider {\n\
+            margin-top: 50px;\n\
+            -webkit-appearance: none;\n\
+            width: 100%;\n\
+            height: 50px;\n\
+            border-radius: 30px;\n\
+            background: #d3d3d3;\n\
+            outline: none;\n\
+            -webkit-transition: .2s;\n\
+            transition: opacity .2s;\n\
+        }\n\
+\n\
+        .slider::-webkit-slider-thumb {\n\
+            -webkit-appearance: none;\n\
+            appearance: none;\n\
+            width: 50px;\n\
+            height: 50px;\n\
+            border-radius: 50%;\n\
+            background: #000000;\n\
+            cursor: pointer;\n\
+        }\n\
     </style>\n\
+\n\
 </head>\n\
 \n\
 <body>\n\
     <div class='hexColorPicker'>\n\
         <div id='output' class='noselect'></div>\n\
     </div>\n\
+    <div style=\"width: 50%; margin: auto;\">\n\
+        <input class=\"slider\" type=\"range\" min=\"0\" max=\"1\" step=\"0.01\" value=\"1\" id=\"brightnessSlider\">\n\
+    </div>\n\
     <script>\n\
+\n\
+        var brightnessSlider = document.getElementById(\"brightnessSlider\");\n\
+        var rVal = 255;\n\
+        var gVal = 255;\n\
+        var bVal = 255;\n\
 \n\
         const hexToRGB = (hex) => {\n\
             let h = hex.slice(hex.startsWith('#') ? 1 : 0);\n\
@@ -68,17 +101,23 @@ String root_html = "<!DOCTYPE html>\n\
             };\n\
         };\n\
 \n\
-        function handleRest(r, g, b) {\n\
-            console.log(r);\n\
-            console.log(g);\n\
-            console.log(b);\n\
+        function handleRest() {\n\
+            var brightness = brightnessSlider.value;\n\
+\n\
+            var rAdj = Math.round(rVal * brightness)\n\
+            var gAdj = Math.round(gVal * brightness)\n\
+            var bAdj = Math.round(bVal * brightness)\n\
+\n\
+            console.log(`Initial: ${rVal} ${gVal} ${bVal}`);\n\
+            console.log(`Bright Adjusted: ${rAdj} ${gAdj} ${bAdj}`);\n\
+\n\
 \n\
             var url = 'change';\n\
             var xhr = new XMLHttpRequest();\n\
             xhr.open('POST', url, true);\n\
             xhr.setRequestHeader('Content-Type', 'application/json');\n\
             // Converting JSON data to string\n\
-            var data = JSON.stringify({ \"r\": r, \"g\": g, \"b\": b });\n\
+            var data = JSON.stringify({ \"r\": rAdj, \"g\": gAdj, \"b\": bAdj });\n\
 \n\
             // Sending data with the request\n\
             xhr.send(data);\n\
@@ -141,17 +180,21 @@ String root_html = "<!DOCTYPE html>\n\
                     let dataset = hexSrcElement.dataset;\n\
                     let hexVal = dataset.hex;\n\
 \n\
-                    let rVal = dataset['r'];\n\
-                    let gVal = dataset['g'];\n\
-                    let bVal = dataset['b'];\n\
+                    rVal = dataset['r'];\n\
+                    gVal = dataset['g'];\n\
+                    bVal = dataset['b'];\n\
 \n\
                     // Send of data to function\n\
-                    handleRest(rVal, gVal, bVal);\n\
+                    handleRest();\n\
 \n\
 \n\
                 }, false);\n\
                 h++;\n\
             }\n\
+        };\n\
+\n\
+        brightnessSlider.onchange = function () {\n\
+            handleRest();\n\
         };\n\
 \n\
         generateColorPicker();\n\

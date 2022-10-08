@@ -7,21 +7,23 @@
         body {
             padding: 0;
             margin: 0;
-            overflow: hidden;
+            /* overflow: hidden; */
             font-family: monospace;
             font-size: 1rem;
         }
 
         div.hexColorPicker {
-            width: fit-content;
+            width: 100%;
             margin: 0.75em auto;
         }
 
         span.condensed-line {
             text-align: center;
             display: block;
-            font-size: 20px;
-            line-height: 14.65px;
+            /* font-size: 40px; */
+            font-size: 80px;
+            /* line-height: 29.3px; */
+            line-height: 58.6px;
             font-stretch: ultra-condensed;
         }
 
@@ -48,14 +50,45 @@
             /* Non-prefixed version, currently
 		                                  supported by Chrome, Edge, Opera and Firefox */
         }
+
+        .slider {
+            margin-top: 50px;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 50px;
+            border-radius: 30px;
+            background: #d3d3d3;
+            outline: none;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #000000;
+            cursor: pointer;
+        }
     </style>
+
 </head>
 
 <body>
     <div class='hexColorPicker'>
         <div id='output' class='noselect'></div>
     </div>
+    <div style="width: 50%; margin: auto;">
+        <input class="slider" type="range" min="0" max="1" step="0.01" value="1" id="brightnessSlider">
+    </div>
     <script>
+
+        var brightnessSlider = document.getElementById("brightnessSlider");
+        var rVal = 255;
+        var gVal = 255;
+        var bVal = 255;
 
         const hexToRGB = (hex) => {
             let h = hex.slice(hex.startsWith('#') ? 1 : 0);
@@ -68,17 +101,23 @@
             };
         };
 
-        function handleRest(r, g, b) {
-            console.log(r);
-            console.log(g);
-            console.log(b);
+        function handleRest() {
+            var brightness = brightnessSlider.value;
+
+            var rAdj = Math.round(rVal * brightness)
+            var gAdj = Math.round(gVal * brightness)
+            var bAdj = Math.round(bVal * brightness)
+
+            console.log(`Initial: ${rVal} ${gVal} ${bVal}`);
+            console.log(`Bright Adjusted: ${rAdj} ${gAdj} ${bAdj}`);
+
 
             var url = 'change';
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             // Converting JSON data to string
-            var data = JSON.stringify({ "r": r, "g": g, "b": b });
+            var data = JSON.stringify({ "r": rAdj, "g": gAdj, "b": bAdj });
 
             // Sending data with the request
             xhr.send(data);
@@ -141,17 +180,21 @@
                     let dataset = hexSrcElement.dataset;
                     let hexVal = dataset.hex;
 
-                    let rVal = dataset['r'];
-                    let gVal = dataset['g'];
-                    let bVal = dataset['b'];
+                    rVal = dataset['r'];
+                    gVal = dataset['g'];
+                    bVal = dataset['b'];
 
                     // Send of data to function
-                    handleRest(rVal, gVal, bVal);
+                    handleRest();
 
 
                 }, false);
                 h++;
             }
+        };
+
+        brightnessSlider.onchange = function () {
+            handleRest();
         };
 
         generateColorPicker();
