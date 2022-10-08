@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ArduinoJson.h>
+#include "root.h"
 
 #define SERIAL
 
@@ -55,9 +56,9 @@ void change()
     String body = server.arg("plain");
     deserializeJson(jsonDocument, body);
 
-    red = jsonDocument["red"];
-    green = jsonDocument["green"];
-    blue = jsonDocument["blue"];
+    red = jsonDocument["r"];
+    green = jsonDocument["g"];
+    blue = jsonDocument["b"];
 
     debugPrintln(red);
     debugPrintln(green);
@@ -69,13 +70,7 @@ void change()
 // Root page
 void page_root()
 {
-    String HTML = "<!DOCTYPE html>\
-<html>\
-<body>\
-<h1>My First Web Server with ESP32 - Station Mode &#128522;</h1>\
-</body>\
-</html>";
-    server.send(200, "text/html", HTML);
+    server.send(200, "text/html", root_html);
 }
 
 void setup()
