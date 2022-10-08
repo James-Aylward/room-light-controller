@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <WebServer.h>
+#include <ArduinoJson.h>
 
 #define SERIAL
 
@@ -8,6 +9,7 @@
 #define HOSTNAME "LGBT"
 
 // Colour variables
+StaticJsonDocument<150> jsonDocument;
 uint8_t red = 0;
 uint8_t green = 0;
 uint8_t blue = 0;
@@ -17,7 +19,7 @@ WebServer server(80);
 // Serial begin with debug guards
 void debugBegin(unsigned long baudrate)
 {
-#ifdef SERAIL
+#ifdef SERIAL
     Serial.begin(baudrate);
 #endif
 }
@@ -44,6 +46,24 @@ void debugPrintln(T message)
 void setupRoutes()
 {
     server.on("/", page_root);
+    server.on("/change", HTTP_POST, change);
+}
+
+// REST endpoint for updating values
+void change()
+{
+    String body = server.arg("plain");
+    deserializeJson(jsonDocument, body);
+
+    red = jsonDocument["red"];
+    green = jsonDocument["green"];
+    blue = jsonDocument["blue"];
+
+    debugPrintln(red);
+    debugPrintln(green);
+    debugPrintln(blue);
+
+    server.send(200, "application/json", "{}");
 }
 
 // Root page
