@@ -6,9 +6,9 @@
 // #define SERIAL
 
 // WiFi Parameters
-#define SSID "AYLWARD_2.4G"
-#define PASSWORD "0414626649"
-#define HOSTNAME "RGB Contro`ller"
+#define SSID "AYLWARD HOUSE 2.4G"
+#define PASSWORD "curlymint607"
+#define HOSTNAME "RGB Controller"
 
 // PWM Parameters
 #define FREQ 5000
